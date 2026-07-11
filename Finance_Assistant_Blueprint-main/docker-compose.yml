@@ -1,0 +1,74 @@
+# ============================================================
+# Meridian — Local Development Environment
+# ============================================================
+# Usage:
+#   docker compose up -d          # Start all services
+#   docker compose logs -f api    # Tail API logs
+#   docker compose down -v        # Stop and remove volumes
+# ============================================================
+
+services:
+  # --- PostgreSQL with pgvector ---
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: meridian-postgres
+    environment:
+      POSTGRES_USER: meridian
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: meridian
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meridian -d meridian"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- Redis ---
+  redis:
+    image: redis:7-alpine
+    container_name: meridian-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # --- Meridian API ---
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: meridian-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=dev
+      - LOG_LEVEL=DEBUG
+      - DATABASE_URL=postgresql+asyncpg://meridian:changeme@postgres:5432/meridian
+      - REDIS_URL=redis://redis:6379/0
+      - AI_CHAT_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      # Mount source code for hot-reload in development
+      - ./services/api-gateway/finance_assistant:/app/finance_assistant:ro
+    command: >
+      uvicorn finance_assistant.main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+      --reload-dir /app/finance_assistant
+
+volumes:
+  postgres_data:
+  redis_data:
