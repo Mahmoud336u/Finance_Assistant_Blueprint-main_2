@@ -12,10 +12,14 @@ from typing import AsyncIterator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from .cache import close_redis, init_redis
 from .config import Settings, get_settings
+from .database import close_database, init_database
 from .exceptions import register_exception_handlers
 from .logging import get_logger, setup_logging
 from .middleware import RequestIdMiddleware, RequestLoggingMiddleware
+from .routes.chat import router as chat_router
+from .routes.documents import router as documents_router
 from .routes.health import router as health_router
 
 
@@ -23,12 +27,10 @@ from .routes.health import router as health_router
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Application lifespan — startup and shutdown logic.
 
-    Use this for initializing and cleaning up resources:
-    - Database connection pools
-    - Redis connections
-    - Background tasks
-
-    TODO (Phase 2): Initialize database and cache connections here.
+    Initializes and cleans up:
+    - Database connection pool (asyncpg via SQLAlchemy)
+    - Redis connection
+    - Background tasks (future)
     """
     logger = get_logger(__name__)
     settings = get_settings()
@@ -40,16 +42,16 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     )
 
     # === Startup ===
-    # TODO: Initialize database pool (Phase 2)
-    # TODO: Initialize Redis connection (Phase 2)
+    await init_database(settings)
+    await init_redis(settings)
     # TODO: Initialize Bedrock client (Phase 3)
 
     yield  # Application runs here
 
     # === Shutdown ===
     await logger.ainfo("Shutting down Meridian API")
-    # TODO: Close database pool (Phase 2)
-    # TODO: Close Redis connection (Phase 2)
+    await close_redis()
+    await close_database()
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -96,7 +98,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # --- Routes ---
     app.include_router(health_router)
-    # TODO: app.include_router(v1_router, prefix="/v1")
+    app.include_router(chat_router)
+    app.include_router(documents_router)
 
     return app
 
