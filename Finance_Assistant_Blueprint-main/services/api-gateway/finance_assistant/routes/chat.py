@@ -17,9 +17,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from ..ai.llm import invoke_llm, stream_llm
 from ..ai.prompts import assemble_chat_prompt
 from ..ai.retriever import retrieve_similar_chunks, retrieve_user_context
+from ..auth.dependencies import get_current_user
 from ..database import get_db_session
 from ..exceptions import NotFoundError, ValidationError
 from ..logging import get_logger
+from ..models.user import User
 from ..schemas import ChatMessageRequest, ChatMessageResponse, ChatRole
 
 logger = get_logger(__name__)
@@ -30,6 +32,7 @@ router = APIRouter(prefix="/v1/chat", tags=["chat"])
 @router.post("", response_model=ChatMessageResponse)
 async def send_message(
     request: ChatMessageRequest,
+    user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ) -> ChatMessageResponse | StreamingResponse:
     """Send a message and receive an AI-powered financial response.
@@ -46,9 +49,7 @@ async def send_message(
     if not request.message.strip():
         raise ValidationError("Message cannot be empty")
 
-    # TODO: Get actual user_id from auth middleware (Phase 4)
-    # For now, use a placeholder for development
-    user_id = uuid.UUID("00000000-0000-0000-0000-000000000001")
+    user_id = user.id
 
     # Step 1: Retrieve RAG context
     rag_chunks = await retrieve_similar_chunks(

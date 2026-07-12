@@ -15,6 +15,7 @@ import boto3
 from ..config import get_settings
 from ..exceptions import ExternalServiceError
 from ..logging import get_logger
+from ..telemetry import track_llm_usage
 
 logger = get_logger(__name__)
 
@@ -114,6 +115,14 @@ async def invoke_llm(
             latency_ms=latency_ms,
         )
 
+        track_llm_usage(
+            model=model,
+            provider="bedrock",
+            prompt_tokens=usage.get("input_tokens", 0),
+            completion_tokens=usage.get("output_tokens", 0),
+            latency_ms=latency_ms,
+        )
+
         return LLMResponse(
             content=content,
             model=model,
@@ -208,6 +217,16 @@ async def stream_llm(
             model=model,
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
+        )
+
+        # We don't have accurate latency for the stream here without adding state,
+        # so we pass 0 for latency in the stream metrics (or you could track it).
+        track_llm_usage(
+            model=model,
+            provider="bedrock",
+            prompt_tokens=prompt_tokens,
+            completion_tokens=completion_tokens,
+            latency_ms=0,
         )
 
     except Exception as exc:

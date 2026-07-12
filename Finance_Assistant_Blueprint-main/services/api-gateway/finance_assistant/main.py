@@ -17,10 +17,16 @@ from .config import Settings, get_settings
 from .database import close_database, init_database
 from .exceptions import register_exception_handlers
 from .logging import get_logger, setup_logging
-from .middleware import RequestIdMiddleware, RequestLoggingMiddleware
+from .middleware import (
+    RateLimitMiddleware,
+    RequestIdMiddleware,
+    RequestLoggingMiddleware,
+    SecurityHeadersMiddleware,
+)
 from .routes.chat import router as chat_router
 from .routes.documents import router as documents_router
 from .routes.health import router as health_router
+from .telemetry import get_prometheus_metrics, setup_telemetry
 
 
 @asynccontextmanager
@@ -84,6 +90,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     # --- Middleware (order matters: first added = outermost) ---
     app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(RequestIdMiddleware)
+    app.add_middleware(RateLimitMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -100,6 +108,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(health_router)
     app.include_router(chat_router)
     app.include_router(documents_router)
+
+    # --- Metrics ---
+    @app.get("/metrics", tags=["observability"])
+    async def metrics_endpoint():
+        """Prometheus metrics endpoint."""
+        from fastapi.responses import Response
+        return Response(content=get_prometheus_metrics(), media_type="text/plain; version=0.0.4")
+
+    # --- Telemetry Setup ---
+    setup_telemetry(app)
 
     return app
 

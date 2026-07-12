@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..ai.embeddings import get_embedding_model_version
 from ..ai.ingestion import ingest_document
+from ..auth.api_keys import verify_api_key
 from ..database import get_db_session
 from ..logging import get_logger
 from ..models.embedding import KnowledgeEmbedding
@@ -25,6 +26,7 @@ router = APIRouter(prefix="/v1/documents", tags=["documents"])
 @router.post("", response_model=DocumentIngestResponse, status_code=201)
 async def ingest_document_endpoint(
     request: DocumentIngestRequest,
+    service_name: str = Depends(verify_api_key),
     db: AsyncSession = Depends(get_db_session),
 ) -> DocumentIngestResponse:
     """Ingest a document into the RAG knowledge base.
@@ -82,6 +84,7 @@ async def ingest_document_endpoint(
 
 @router.get("/stats")
 async def document_stats(
+    service_name: str = Depends(verify_api_key),
     db: AsyncSession = Depends(get_db_session),
 ) -> dict:
     """Get statistics about the knowledge base.
