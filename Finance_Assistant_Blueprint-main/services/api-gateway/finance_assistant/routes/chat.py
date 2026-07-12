@@ -14,9 +14,11 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..ai.guardrails import validate_user_input
 from ..ai.llm import invoke_llm, stream_llm
 from ..ai.prompts import assemble_chat_prompt
 from ..ai.retriever import retrieve_similar_chunks, retrieve_user_context
+from ..audit import AuditAction, record_audit_event
 from ..auth.dependencies import get_current_user
 from ..database import get_db_session
 from ..exceptions import NotFoundError, ValidationError
@@ -48,6 +50,21 @@ async def send_message(
     """
     if not request.message.strip():
         raise ValidationError("Message cannot be empty")
+
+    # Guardrail check — block prompt injection before any AI processing
+    guardrail_result = await validate_user_input(request.message)
+    if not guardrail_result.is_safe:
+        await record_audit_event(
+            AuditAction.GUARDRAIL_BLOCK,
+            user_id=str(user.id),
+            details={
+                "reason": guardrail_result.blocked_reason,
+                "threat_level": guardrail_result.threat_level,
+            },
+        )
+        raise ValidationError(
+            f"Message blocked by safety filter: {guardrail_result.blocked_reason}"
+        )
 
     user_id = user.id
 

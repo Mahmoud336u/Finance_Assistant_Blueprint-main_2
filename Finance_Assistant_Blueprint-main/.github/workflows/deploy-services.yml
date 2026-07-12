@@ -1,12 +1,137 @@
-name: Placeholder
+# ============================================================
+# Meridian — Deploy Services Workflow
+# ============================================================
+# Triggered on push to main (after CI passes) or manually.
+# Builds the Docker image, pushes to ECR, and deploys to ECS.
+# ============================================================
+
+name: Deploy Services
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+        default: dev
 
-permissions: {}
+  push:
+    branches: [main]
+    paths:
+      - "services/**"
+      - "Dockerfile"
+      - "docker-compose.yml"
+
+concurrency:
+  group: deploy-services-${{ github.event.inputs.environment || 'dev' }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: meridian-api
+  ECS_CLUSTER: meridian-${{ github.event.inputs.environment || 'dev' }}-cluster
+  ECS_SERVICE: meridian-${{ github.event.inputs.environment || 'dev' }}-api
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
-  placeholder:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+
     steps:
-      - run: echo "Workflow placeholder"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-arn: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+            --build-arg GIT_SHA=${{ github.sha }} \
+            --build-arg ENVIRONMENT=${{ github.event.inputs.environment || 'dev' }} \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            -f services/api-gateway/Dockerfile \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Download current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition ${{ env.ECS_SERVICE }} \
+            --query taskDefinition \
+            > task-definition.json
+
+      - name: Update task definition with new image
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: api
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+          wait-for-minutes: 10
+
+      - name: Run smoke tests
+        if: success()
+        run: |
+          echo "Waiting for service to stabilize..."
+          sleep 30
+
+          ALB_URL=$(aws elbv2 describe-load-balancers \
+            --names meridian-${{ github.event.inputs.environment || 'dev' }}-alb \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+
+          echo "Running smoke tests against $ALB_URL"
+
+          # Health check
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://$ALB_URL/health)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Health check failed with HTTP $HTTP_CODE"
+            exit 1
+          fi
+          echo "✅ Health check passed"
+
+          # Readiness check
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://$ALB_URL/ready)
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "Readiness check failed with HTTP $HTTP_CODE"
+            exit 1
+          fi
+          echo "✅ Readiness check passed"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Deployment failed for ${{ env.ECS_SERVICE }} in ${{ github.event.inputs.environment || 'dev' }}"
