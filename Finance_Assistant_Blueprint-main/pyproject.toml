@@ -152,3 +152,9 @@ exclude_lines = [
     "if __name__ == .__main__.",
     "raise NotImplementedError",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["services/api-gateway/finance_assistant"]
+
+[tool.hatch.build.targets.sdist]
+include = ["services/api-gateway/finance_assistant"]
