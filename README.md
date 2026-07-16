@@ -5,7 +5,7 @@
 |---|---|
 | **Status** | Draft v1.0 — active |
 | **Owner** | Mahmoud Heshmat |
-| **Last updated** | 2026-06-12 |
+| **Last updated** | 2026-07-16 |
 | **Companion docs** | [README.md](./README.md) for product overview · `docs/adr/` for architecture decisions |
 
 > *"Meridian" is a working title for the platform — rename freely throughout this document and the README if you choose something else.*
