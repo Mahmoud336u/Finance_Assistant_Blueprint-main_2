@@ -156,7 +156,7 @@ Certifications are sequenced to reinforce the sprint work in progress, not as a 
 | AWS DVA-C02 | Sprints 9–16 | Deep dive on Lambda, API Gateway, DynamoDB — all central to Phase 2 |
 | AWS MLS-C01 | Sprints 17–26 | Aligns with the DataOps and HITL work in Phase 3 |
 | AWS SAP-C02 | Sprints 29–36 | Validates the multi-region DR design at the point it is implemented |
-| Goethe B2 | Continuous | Independent of build sprints; protect a fixed weekly slot throughout, not tied to phase boundaries |
+
 
 ### 9.2 Testing strategy by phase
 
