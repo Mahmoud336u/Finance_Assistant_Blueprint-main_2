@@ -22,6 +22,8 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 - Pydantic settings for configuration management
 - Docker and docker-compose for local development
 - CI pipeline (ruff lint + mypy + pytest)
+- `docs/project-management/github-project-board.md` implementing board structure, timeline, milestones, assignments, and governance cadence
+- `docs/sprints/recurring-sprint-checklist.md` for required sprint planning/retro/changelog updates
 
 ### Changed
 - Moved architecture blueprints from `docs/adr/` to `docs/architecture/`
