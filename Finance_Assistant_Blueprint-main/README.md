@@ -192,7 +192,6 @@ Every sprint updates `CHANGELOG.md`. Every major decision — including reversed
 | AWS costs exceed personal budget | Medium | High | Free Tier + Bedrock on-demand only through Phase 1–2; CloudWatch billing alarms at $50 / $150 / $300; non-prod environments torn down nightly via a scheduled `terraform destroy` |
 | Scope creep delays the MVP | High | Medium | Phase 1 backlog is frozen after Sprint 1; new ideas go to a separate "Phase 2+ ideas" backlog rather than the active sprint |
 | pgvector hits a performance ceiling early | Low at portfolio scale | Medium | Benchmark at 100k / 1M / 5M vectors to know the actual ceiling; document the Qdrant migration path as an ADR even if it is never executed |
-| Solo-developer time conflicts (job search, German B2, coursework) | High | High | Sprint scope is capped, not stretched; a buffer week every three sprints absorbs slippage; velocity is tracked and the plan is re-cut rather than worked around |
 | LLM provider model deprecations | Medium | Medium | Model versions are pinned in config; new model versions are smoke-tested on a branch before being promoted |
 | QLDB-shaped design debt | Resolved | — | Mitigated from Sprint 7 via ADR-003 (DynamoDB Streams + S3 Object Lock) before any code depends on QLDB |
 
