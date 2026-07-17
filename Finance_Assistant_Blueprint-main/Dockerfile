@@ -15,8 +15,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy dependency specification first (cache layer)
-COPY pyproject.toml ./
+# Copy package metadata first (cache layer)
+COPY pyproject.toml README.md ./
 
 # Install production dependencies only
 RUN pip install --no-cache-dir --prefix=/install .
