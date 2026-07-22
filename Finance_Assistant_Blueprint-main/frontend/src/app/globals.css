@@ -1,0 +1,305 @@
+@import "tailwindcss";
+
+/* ============================================================
+   MERIDIAN — Design System
+   Premium dark-first theme with emerald accents
+   ============================================================ */
+
+@theme {
+  /* --- Color Palette --- */
+  --color-background: hsl(224 30% 6%);
+  --color-background-alt: hsl(224 25% 8%);
+  --color-surface: hsl(224 25% 9%);
+  --color-surface-hover: hsl(224 22% 12%);
+  --color-surface-active: hsl(224 20% 15%);
+  --color-border: hsl(224 15% 16%);
+  --color-border-subtle: hsl(224 12% 12%);
+  --color-ring: hsl(160 84% 39%);
+
+  --color-foreground: hsl(0 0% 95%);
+  --color-foreground-muted: hsl(0 0% 65%);
+  --color-foreground-subtle: hsl(0 0% 45%);
+
+  /* Accent — Emerald */
+  --color-primary: hsl(160 84% 39%);
+  --color-primary-hover: hsl(160 84% 45%);
+  --color-primary-muted: hsl(160 40% 20%);
+  --color-primary-foreground: hsl(0 0% 2%);
+
+  /* Semantic */
+  --color-success: hsl(142 71% 45%);
+  --color-success-muted: hsl(142 40% 15%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-muted: hsl(0 40% 15%);
+  --color-warning: hsl(38 92% 50%);
+  --color-warning-muted: hsl(38 40% 15%);
+  --color-info: hsl(210 100% 60%);
+  --color-info-muted: hsl(210 40% 15%);
+
+  /* Component tokens */
+  --color-card: hsl(224 25% 9%);
+  --color-card-foreground: hsl(0 0% 95%);
+  --color-popover: hsl(224 25% 9%);
+  --color-popover-foreground: hsl(0 0% 95%);
+  --color-muted: hsl(224 15% 16%);
+  --color-muted-foreground: hsl(0 0% 65%);
+  --color-accent: hsl(224 22% 12%);
+  --color-accent-foreground: hsl(0 0% 95%);
+  --color-input: hsl(224 15% 16%);
+
+  /* Sidebar */
+  --color-sidebar: hsl(224 30% 5%);
+  --color-sidebar-foreground: hsl(0 0% 80%);
+  --color-sidebar-hover: hsl(224 22% 10%);
+  --color-sidebar-active: hsl(160 84% 39% / 0.12);
+  --color-sidebar-active-foreground: hsl(160 84% 45%);
+
+  /* Chart colors */
+  --color-chart-1: hsl(160 84% 39%);
+  --color-chart-2: hsl(210 100% 60%);
+  --color-chart-3: hsl(280 70% 60%);
+  --color-chart-4: hsl(38 92% 50%);
+  --color-chart-5: hsl(0 84% 60%);
+  --color-chart-6: hsl(190 80% 50%);
+
+  /* --- Typography --- */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* --- Spacing --- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  /* --- Sidebar --- */
+  --sidebar-width: 280px;
+  --sidebar-width-collapsed: 64px;
+
+  /* --- Animations --- */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(224 15% 20%);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(224 15% 28%);
+}
+
+/* Selection */
+::selection {
+  background: hsl(160 84% 39% / 0.3);
+  color: var(--color-foreground);
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* Glass effect */
+.glass {
+  background: hsl(224 25% 9% / 0.7);
+  backdrop-filter: blur(16px) saturate(1.5);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+}
+
+/* Gradient border */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    hsl(160 84% 39% / 0.3),
+    hsl(210 100% 60% / 0.1),
+    transparent
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* Glow effects */
+.glow-primary {
+  box-shadow: 0 0 20px hsl(160 84% 39% / 0.15),
+    0 0 60px hsl(160 84% 39% / 0.05);
+}
+
+.glow-subtle {
+  box-shadow: 0 0 40px hsl(224 30% 6% / 0.8);
+}
+
+/* Text gradient */
+.text-gradient {
+  background: linear-gradient(135deg, hsl(160 84% 45%), hsl(190 80% 50%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Shimmer loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(224 15% 12%) 25%,
+    hsl(224 15% 18%) 50%,
+    hsl(224 15% 12%) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-md);
+}
+
+/* Pulse dot animation (typing indicator) */
+@keyframes pulse-dot {
+  0%, 60%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.typing-dot {
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s var(--ease-out-expo) forwards;
+}
+
+/* Counter animation for numbers */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count-up {
+  animation: count-up 0.5s var(--ease-out-expo) forwards;
+}
+
+/* Mock data badge */
+.mock-badge {
+  position: relative;
+}
+
+.mock-badge::after {
+  content: "MOCK";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: hsl(38 92% 50%);
+  background: hsl(38 92% 50% / 0.1);
+  border: 1px solid hsl(38 92% 50% / 0.2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
+/* ============================================================
+   LIGHT THEME OVERRIDES
+   ============================================================ */
+
+[data-theme="light"] {
+  --color-background: hsl(0 0% 98%);
+  --color-background-alt: hsl(0 0% 96%);
+  --color-surface: hsl(0 0% 100%);
+  --color-surface-hover: hsl(0 0% 97%);
+  --color-surface-active: hsl(0 0% 95%);
+  --color-border: hsl(0 0% 90%);
+  --color-border-subtle: hsl(0 0% 93%);
+  --color-foreground: hsl(224 30% 10%);
+  --color-foreground-muted: hsl(224 10% 40%);
+  --color-foreground-subtle: hsl(224 8% 55%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(224 30% 10%);
+  --color-popover: hsl(0 0% 100%);
+  --color-popover-foreground: hsl(224 30% 10%);
+  --color-muted: hsl(0 0% 93%);
+  --color-muted-foreground: hsl(224 10% 40%);
+  --color-accent: hsl(0 0% 95%);
+  --color-accent-foreground: hsl(224 30% 10%);
+  --color-input: hsl(0 0% 90%);
+  --color-sidebar: hsl(0 0% 97%);
+  --color-sidebar-foreground: hsl(224 15% 30%);
+  --color-sidebar-hover: hsl(0 0% 94%);
+}
