@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Sparkles, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { smoothEase } from "@/lib/animations";
 import { useAuthStore } from "@/lib/store/auth-store";
 
 export default function LoginPage() {
@@ -34,7 +35,7 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: smoothEase }}
           className="max-w-md text-center"
         >
           <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 glow-primary">
@@ -73,7 +74,7 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.5, delay: 0.1, ease: smoothEase }}
           className="w-full max-w-sm"
         >
           {/* Mobile logo */}

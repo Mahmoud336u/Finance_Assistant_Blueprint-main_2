@@ -25,32 +25,20 @@ import {
 } from "recharts";
 import { cn, formatCurrency, formatPercent } from "@/lib/utils";
 import { mockDashboard } from "@/lib/mock-data";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.06 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
-};
+import { staggerContainer, fadeInUp, smoothEase } from "@/lib/animations";
 
 export default function DashboardPage() {
   const data = mockDashboard;
 
   return (
     <motion.div
-      variants={container}
+      variants={staggerContainer}
       initial="hidden"
       animate="show"
       className="space-y-6"
     >
       {/* Header */}
-      <motion.div variants={item} className="flex items-center justify-between">
+      <motion.div variants={fadeInUp} className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
           <p className="text-sm text-foreground-muted">
@@ -98,7 +86,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Income vs Expenses Chart */}
         <motion.div
-          variants={item}
+          variants={fadeInUp}
           className="col-span-1 rounded-xl border border-border bg-card p-5 lg:col-span-2"
         >
           <div className="mb-4 flex items-center justify-between">
@@ -152,7 +140,7 @@ export default function DashboardPage() {
 
         {/* Spending Breakdown */}
         <motion.div
-          variants={item}
+          variants={fadeInUp}
           className="rounded-xl border border-border bg-card p-5"
         >
           <h2 className="mb-1 text-sm font-medium text-foreground">
@@ -209,7 +197,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Budget Progress */}
         <motion.div
-          variants={item}
+          variants={fadeInUp}
           className="col-span-1 space-y-3 rounded-xl border border-border bg-card p-5 lg:col-span-2"
         >
           <div className="flex items-center justify-between">
@@ -250,7 +238,7 @@ export default function DashboardPage() {
                     )}
                     initial={{ width: 0 }}
                     animate={{ width: `${percent}%` }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                    transition={{ duration: 0.8, ease: smoothEase, delay: 0.3 }}
                   />
                 </div>
               </div>
@@ -260,7 +248,7 @@ export default function DashboardPage() {
 
         {/* Financial Health Score */}
         <motion.div
-          variants={item}
+          variants={fadeInUp}
           className="flex flex-col items-center justify-center rounded-xl border border-border bg-card p-5"
         >
           <Heart className="mb-2 h-5 w-5 text-primary" />
@@ -283,7 +271,7 @@ export default function DashboardPage() {
                   strokeDashoffset:
                     2 * Math.PI * 42 * (1 - data.financial_health_score / 100),
                 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+                transition={{ duration: 1.2, ease: smoothEase, delay: 0.5 }}
               />
             </svg>
             <span className="absolute text-3xl font-bold text-foreground">
@@ -296,7 +284,7 @@ export default function DashboardPage() {
 
       {/* Recent Transactions */}
       <motion.div
-        variants={item}
+        variants={fadeInUp}
         className="rounded-xl border border-border bg-card p-5"
       >
         <div className="mb-4 flex items-center justify-between">
@@ -338,7 +326,7 @@ export default function DashboardPage() {
               <div className="text-right">
                 <p
                   className={cn(
-                    "text-sm font-semibold tabular-nums font-[var(--font-mono)]",
+                    "text-sm font-semibold tabular-nums",
                     txn.amount > 0 ? "text-success" : "text-foreground",
                   )}
                 >
@@ -359,7 +347,7 @@ export default function DashboardPage() {
 
       {/* AI Insights Card */}
       <motion.div
-        variants={item}
+        variants={fadeInUp}
         className="gradient-border rounded-xl border border-primary/20 bg-card p-5"
       >
         <div className="flex items-center gap-2 mb-3">
@@ -415,7 +403,7 @@ function KPICard({
 
   return (
     <motion.div
-      variants={item}
+      variants={fadeInUp}
       className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-foreground-subtle/20"
     >
       <div className="flex items-center justify-between">

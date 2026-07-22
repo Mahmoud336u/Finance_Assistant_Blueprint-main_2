@@ -4,16 +4,7 @@ import { motion } from "framer-motion";
 import { Plus, PiggyBank, TrendingDown, AlertTriangle } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { mockBudgets } from "@/lib/mock-data";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
-};
+import { staggerContainerMedium as container, fadeInUp as item, smoothEase } from "@/lib/animations";
 
 export default function BudgetsPage() {
   const totalBudget = mockBudgets.reduce((sum, b) => sum + b.amount, 0);
@@ -70,7 +61,7 @@ export default function BudgetsPage() {
             )}
             initial={{ width: 0 }}
             animate={{ width: `${Math.min(totalPercent, 100)}%` }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 1, ease: smoothEase }}
           />
         </div>
         <p className="mt-2 text-xs text-foreground-muted">
@@ -146,7 +137,7 @@ export default function BudgetsPage() {
                   )}
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min(percent, 100)}%` }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  transition={{ duration: 0.8, ease: smoothEase, delay: 0.2 }}
                 />
               </div>
 

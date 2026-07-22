@@ -14,6 +14,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
+import { smoothEase } from "@/lib/animations";
 import { api } from "@/lib/api/client";
 import { useChatStore } from "@/lib/store/chat-store";
 import type { ChatMessage } from "@/lib/types";
@@ -167,7 +168,7 @@ export default function ChatPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.5, ease: smoothEase }}
             className="flex flex-col items-center"
           >
             <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 glow-primary">
@@ -191,7 +192,7 @@ export default function ChatPage() {
                   transition={{
                     duration: 0.3,
                     delay: 0.1 + i * 0.05,
-                    ease: [0.16, 1, 0.3, 1],
+                    ease: smoothEase,
                   }}
                   onClick={() => handleSend(suggestion)}
                   className={cn(
@@ -219,7 +220,7 @@ export default function ChatPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{
                     duration: 0.3,
-                    ease: [0.16, 1, 0.3, 1],
+                    ease: smoothEase,
                   }}
                   className={cn(
                     "flex",

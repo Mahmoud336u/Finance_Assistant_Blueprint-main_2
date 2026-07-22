@@ -1,20 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { User, Shield, Bell, Palette, Globe, LogOut } from "lucide-react";
+import { User, Shield, Bell, Palette, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/lib/store/auth-store";
 import { useUIStore } from "@/lib/store/ui-store";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.06 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
-};
+import { staggerContainer as container, fadeInUpSlow as item } from "@/lib/animations";
 
 export default function SettingsPage() {
   const { user, logout } = useAuthStore();

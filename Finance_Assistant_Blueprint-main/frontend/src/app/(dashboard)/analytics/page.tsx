@@ -17,16 +17,7 @@ import {
 } from "recharts";
 import { formatCurrency } from "@/lib/utils";
 import { mockDashboard } from "@/lib/mock-data";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
-};
+import { staggerContainerMedium as container, fadeInUp as item } from "@/lib/animations";
 
 const tooltipStyle = {
   background: "hsl(224 25% 9%)",

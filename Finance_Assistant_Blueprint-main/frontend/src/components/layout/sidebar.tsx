@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { smoothEase } from "@/lib/animations";
 import { useUIStore } from "@/lib/store/ui-store";
 
 const navItems = [
@@ -72,7 +73,7 @@ export function Sidebar() {
         "transition-[width] duration-250 ease-[var(--ease-out-expo)]",
       )}
       animate={{ width: sidebarCollapsed ? 64 : 280 }}
-      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.25, ease: smoothEase }}
     >
       {/* Logo */}
       <div className="flex h-16 items-center gap-3 border-b border-border px-4">

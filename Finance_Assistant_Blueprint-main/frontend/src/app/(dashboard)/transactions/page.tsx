@@ -12,16 +12,7 @@ import {
 } from "lucide-react";
 import { cn, formatCurrency } from "@/lib/utils";
 import { mockTransactions } from "@/lib/mock-data";
-
-const container = {
-  hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.03 } },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } },
-};
+import { staggerContainerFast as container, fadeInUpFast as item } from "@/lib/animations";
 
 export default function TransactionsPage() {
   const [searchQuery, setSearchQuery] = useState("");
