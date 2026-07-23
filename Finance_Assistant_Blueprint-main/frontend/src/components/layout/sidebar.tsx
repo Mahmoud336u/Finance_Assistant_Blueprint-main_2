@@ -13,10 +13,10 @@ import {
   Settings,
   ChevronsLeft,
   Plus,
-  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { smoothEase } from "@/lib/animations";
+import { MeridianLogo } from "@/components/ui/meridian-logo";
 import { useUIStore } from "@/lib/store/ui-store";
 
 const navItems = [
@@ -76,23 +76,12 @@ export function Sidebar() {
       transition={{ duration: 0.25, ease: smoothEase }}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 border-b border-border px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary">
-          <Sparkles className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <AnimatePresence>
-          {!sidebarCollapsed && (
-            <motion.span
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.15 }}
-              className="text-lg font-semibold tracking-tight text-foreground"
-            >
-              Meridian
-            </motion.span>
-          )}
-        </AnimatePresence>
+      <div className="logo-hover-target flex h-16 items-center border-b border-border px-3">
+        <MeridianLogo
+          size={sidebarCollapsed ? 28 : 32}
+          collapsed={sidebarCollapsed}
+          showText={!sidebarCollapsed}
+        />
       </div>
 
       {/* New Chat button (for chat page) */}

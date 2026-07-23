@@ -303,3 +303,30 @@ body {
   --color-sidebar-foreground: hsl(224 15% 30%);
   --color-sidebar-hover: hsl(0 0% 94%);
 }
+
+/* ============================================================
+   Logo Styles
+   ============================================================ */
+
+/* Warm text gradient for brand name */
+.logo-text-gradient {
+  background: linear-gradient(135deg, #F59E0B 0%, #FB923C 45%, #F472B6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow appears on hover of the parent container */
+.logo-hover-target:hover .logo-glow {
+  opacity: 1 !important;
+}
+
+/* Subtle pulse animation for logo idle state */
+@keyframes logo-pulse {
+  0%, 100% { filter: drop-shadow(0 0 0px rgba(251, 146, 60, 0)); }
+  50% { filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.15)); }
+}
+
+.logo-hover-target:hover svg {
+  animation: logo-pulse 2s ease-in-out infinite;
+}
