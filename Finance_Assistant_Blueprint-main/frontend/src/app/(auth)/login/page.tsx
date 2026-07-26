@@ -7,6 +7,7 @@ import { Sparkles, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { smoothEase } from "@/lib/animations";
 import { useAuthStore } from "@/lib/store/auth-store";
+import { MeridianLogo, MeridianLogoLarge } from "@/components/ui/meridian-logo";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("demo@meridian.finance");
@@ -38,12 +39,7 @@ export default function LoginPage() {
           transition={{ duration: 0.6, ease: smoothEase }}
           className="max-w-md text-center"
         >
-          <div className="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 glow-primary">
-            <Sparkles className="h-10 w-10 text-primary" />
-          </div>
-          <h1 className="mb-3 text-4xl font-bold tracking-tight">
-            <span className="text-gradient">Meridian</span>
-          </h1>
+          <MeridianLogoLarge className="mb-6" />
           <p className="text-lg text-foreground-muted">
             AI-Powered Financial Intelligence
           </p>
@@ -78,11 +74,8 @@ export default function LoginPage() {
           className="w-full max-w-sm"
         >
           {/* Mobile logo */}
-          <div className="mb-8 flex items-center gap-3 lg:hidden">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-              <Sparkles className="h-5 w-5 text-primary" />
-            </div>
-            <span className="text-xl font-semibold">Meridian</span>
+          <div className="mb-8 lg:hidden">
+            <MeridianLogo size={36} showText={true} textSize="lg" />
           </div>
 
           <h2 className="text-2xl font-semibold tracking-tight">Welcome back</h2>

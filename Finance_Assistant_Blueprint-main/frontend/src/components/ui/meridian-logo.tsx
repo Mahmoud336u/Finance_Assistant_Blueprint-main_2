@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface MeridianLogoProps {
   size?: number;
@@ -10,15 +10,6 @@ interface MeridianLogoProps {
   className?: string;
 }
 
-/**
- * Meridian Logo
- *
- * A premium, warm-toned logo featuring two overlapping arcs that form
- * a subtle "M" shape — evoking a compass meridian and a protective embrace.
- * Uses warm amber → coral → rose gradient for a caring, trustworthy feel.
- *
- * Hover: subtle scale + glow pulse
- */
 export function MeridianLogo({
   size = 32,
   collapsed = false,
@@ -26,6 +17,8 @@ export function MeridianLogo({
   textSize = "md",
   className = "",
 }: MeridianLogoProps) {
+  const shouldReduceMotion = useReducedMotion();
+
   const textSizes = {
     sm: "text-base",
     md: "text-lg",
@@ -33,151 +26,98 @@ export function MeridianLogo({
     xl: "text-4xl",
   };
 
+  // Hover animations
+  const logoHover = shouldReduceMotion ? {} : {
+    scale: 1.05,
+    transition: { duration: 0.3, ease: "easeOut" }
+  };
+
+  const starHover = shouldReduceMotion ? {} : {
+    y: -2,
+    scale: 1.1,
+    filter: "drop-shadow(0px 2px 4px rgba(244, 63, 94, 0.5))",
+    transition: { duration: 0.3, ease: "easeOut" }
+  };
+
+  const pathHover = shouldReduceMotion ? {} : {
+    strokeWidth: 3.5,
+    filter: "drop-shadow(0px 2px 4px rgba(245, 158, 11, 0.3))",
+    transition: { duration: 0.3, ease: "easeOut" }
+  };
+
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
+    <div className={`flex items-center gap-3 group cursor-pointer ${className}`}>
       <motion.div
-        className="relative shrink-0"
-        whileHover={{
-          scale: 1.08,
-          rotate: [0, -3, 3, 0],
-          transition: { duration: 0.5, ease: "easeInOut" },
+        className="relative shrink-0 flex items-center justify-center"
+        initial="initial"
+        animate="animate"
+        whileHover="hover"
+        whileTap="tap"
+        variants={{
+          hover: logoHover,
+          tap: { scale: 0.95 }
         }}
-        whileTap={{ scale: 0.95 }}
       >
-        {/* Glow layer (visible on hover via CSS) */}
-        <div
-          className="logo-glow absolute inset-0 rounded-xl opacity-0 blur-lg transition-opacity duration-500"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(251, 146, 60, 0.4) 0%, rgba(244, 114, 182, 0.2) 50%, transparent 70%)",
-            width: size + 8,
-            height: size + 8,
-            top: -4,
-            left: -4,
-          }}
+        {/* Ambient subtle background glow on hover */}
+        <div 
+          className="absolute inset-0 rounded-full bg-gradient-to-tr from-amber-500/0 via-rose-500/0 to-violet-500/0 group-hover:from-amber-500/15 group-hover:via-rose-500/15 group-hover:to-violet-500/15 transition-colors duration-500 blur-md pointer-events-none"
+          style={{ width: size * 1.5, height: size * 1.5, top: -size * 0.25, left: -size * 0.25 }}
         />
 
         <svg
           width={size}
           height={size}
-          viewBox="0 0 48 48"
+          viewBox="0 0 32 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="relative z-10"
         >
           <defs>
-            {/* Main warm gradient — amber to coral to rose */}
-            <linearGradient
-              id="logoGradientMain"
-              x1="4"
-              y1="4"
-              x2="44"
-              y2="44"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset="0%" stopColor="#F59E0B" />
-              <stop offset="50%" stopColor="#FB923C" />
-              <stop offset="100%" stopColor="#F472B6" />
+            <linearGradient id="brandGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#F59E0B" /> {/* Amber 500 */}
+              <stop offset="50%" stopColor="#F43F5E" /> {/* Rose 500 */}
+              <stop offset="100%" stopColor="#8B5CF6" /> {/* Violet 500 */}
             </linearGradient>
-
-            {/* Inner accent gradient */}
-            <linearGradient
-              id="logoGradientInner"
-              x1="12"
-              y1="12"
-              x2="36"
-              y2="36"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop offset="0%" stopColor="#FBBF24" />
-              <stop offset="100%" stopColor="#FB7185" />
+            
+            <linearGradient id="starGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#F43F5E" /> {/* Rose 500 */}
+              <stop offset="100%" stopColor="#8B5CF6" /> {/* Violet 500 */}
             </linearGradient>
-
-            {/* Soft shadow */}
-            <filter id="logoShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow
-                dx="0"
-                dy="1"
-                stdDeviation="2"
-                floodColor="#FB923C"
-                floodOpacity="0.25"
-              />
-            </filter>
           </defs>
 
-          {/* Background rounded square */}
-          <rect
-            x="2"
-            y="2"
-            width="44"
-            height="44"
-            rx="12"
-            fill="url(#logoGradientMain)"
-            opacity="0.12"
+          {/* The Meridian Star */}
+          <motion.circle 
+            cx="16" 
+            cy="8" 
+            r="3.5" 
+            fill="url(#starGradient)"
+            variants={{
+              initial: shouldReduceMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0 },
+              animate: { 
+                opacity: 1, 
+                scale: 1,
+                transition: { duration: 0.5, delay: 0.4, type: "spring", stiffness: 200 }
+              },
+              hover: starHover
+            }}
           />
-
-          {/* Left arc — represents protection/embrace */}
-          <motion.path
-            d="M14 36 C14 20, 24 12, 24 12"
-            stroke="url(#logoGradientMain)"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            fill="none"
-            filter="url(#logoShadow)"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
-          />
-
-          {/* Right arc — mirrors the left, completing the "M" shape */}
-          <motion.path
-            d="M24 12 C24 12, 34 20, 34 36"
-            stroke="url(#logoGradientMain)"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            fill="none"
-            filter="url(#logoShadow)"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-          />
-
-          {/* Center down-stroke — the meridian line */}
-          <motion.path
-            d="M24 16 L24 34"
-            stroke="url(#logoGradientInner)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
-          />
-
-          {/* Top dot — compass point / north star */}
-          <motion.circle
-            cx="24"
-            cy="10"
-            r="2.5"
-            fill="url(#logoGradientInner)"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.4, delay: 1 }}
-          />
-
-          {/* Subtle base line — grounding element */}
-          <motion.line
-            x1="16"
-            y1="38"
-            x2="32"
-            y2="38"
-            stroke="url(#logoGradientMain)"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            opacity="0.6"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+          
+          {/* The Path / M */}
+          <motion.path 
+            d="M 4 24 L 10 12 L 16 18 L 22 12 L 28 24" 
+            stroke="url(#brandGradient)" 
+            strokeWidth="3" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+            variants={{
+              initial: shouldReduceMotion ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 },
+              animate: { 
+                pathLength: 1, 
+                opacity: 1,
+                transition: { duration: 1, ease: "easeInOut" }
+              },
+              hover: pathHover
+            }}
           />
         </svg>
       </motion.div>
@@ -185,11 +125,11 @@ export function MeridianLogo({
       {/* Text */}
       {showText && !collapsed && (
         <motion.span
-          initial={{ opacity: 0, x: -8 }}
+          initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -8 }}
           animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -8 }}
+          exit={shouldReduceMotion ? { opacity: 0, x: 0 } : { opacity: 0, x: -8 }}
           transition={{ duration: 0.2 }}
-          className={`font-semibold tracking-tight text-foreground ${textSizes[textSize]}`}
+          className={`font-bold tracking-tight text-foreground ${textSizes[textSize]}`}
         >
           Meridian
         </motion.span>
@@ -198,27 +138,19 @@ export function MeridianLogo({
   );
 }
 
-/**
- * Large centered logo for splash/login pages
- */
 export function MeridianLogoLarge({ className = "" }: { className?: string }) {
   return (
-    <div className={`flex flex-col items-center ${className}`}>
-      <motion.div
-        whileHover={{
-          scale: 1.05,
-          transition: { duration: 0.4, ease: "easeInOut" },
-        }}
-      >
-        <MeridianLogo size={72} showText={false} />
-      </motion.div>
+    <div className={`flex flex-col items-center group cursor-pointer ${className}`}>
+      <MeridianLogo size={80} showText={false} />
       <motion.h1
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.8 }}
-        className="mt-4 text-4xl font-bold tracking-tight"
+        className="mt-6 text-4xl font-bold tracking-tight"
       >
-        <span className="logo-text-gradient">Meridian</span>
+        <span className="bg-gradient-to-r from-amber-500 via-rose-500 to-violet-500 bg-clip-text text-transparent">
+          Meridian
+        </span>
       </motion.h1>
     </div>
   );
