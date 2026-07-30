@@ -1,0 +1,155 @@
+/*
+  Meridian brand CSS
+  -------------------
+  Drop this file into your project and import it once globally.
+  Apply the `.meridian-mark` class to the <svg> element (either the
+  full mark or the small glyph) wherever it appears interactively —
+  navbar, loading screen, etc. Static/non-interactive placements
+  (favicon, app icon) don't need this file at all.
+*/
+
+:root {
+  --meridian-ink:        #231B14; /* primary dark / text on light surfaces */
+  --meridian-ink-soft:   #4A3D2E; /* secondary text, muted */
+  --meridian-canvas:     #FBF6EE; /* light surface / text on dark surfaces */
+  --meridian-canvas-dim: #F2EAD9; /* light surface, slightly recessed */
+  --meridian-gold:       #C89B3C; /* primary accent */
+  --meridian-gold-light: #E8C97A; /* accent highlight / hover / dark-bg pivot */
+  --meridian-gold-deep:  #8F6D26; /* structural strokes (beam, stand) */
+  --meridian-clay:       #B5654A; /* secondary accent, use sparingly */
+  --meridian-line:       #D8CBB0; /* borders, dividers */
+
+  /* animation timing, exposed as variables so product code can
+     override globally (e.g. a "reduce motion" in-app toggle
+     independent of the OS-level setting) without editing this file */
+  --meridian-motion-duration: 420ms;
+  --meridian-motion-easing: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ----------------------------------------------------------------
+   Interactive mark: hover micro-interaction
+   ------------------------------------------------------------- */
+
+.meridian-mark {
+  cursor: pointer;
+  display: block;
+  /* prevents the SVG from being announced as decorative-only when
+     it's the sole content of an interactive element like a link */
+  overflow: visible;
+}
+
+.meridian-mark .m-beam {
+  transition: stroke var(--meridian-motion-duration) var(--meridian-motion-easing);
+}
+
+.meridian-mark .m-weight-solid,
+.meridian-mark .m-weight-open {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    fill var(--meridian-motion-duration) var(--meridian-motion-easing),
+    stroke var(--meridian-motion-duration) var(--meridian-motion-easing),
+    transform var(--meridian-motion-duration) var(--meridian-motion-easing);
+}
+
+.meridian-mark .m-pivot {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform var(--meridian-motion-duration) var(--meridian-motion-easing);
+}
+
+/* on hover: the beam warms in color, the two weights ease very
+   slightly toward re-settling (a small rock, not a spin), and the
+   pivot pulses subtly once. all motion is small and fast, per the
+   brief -- this should read as "alive," not "animated" */
+.meridian-mark:hover .m-beam,
+.meridian-mark:focus-visible .m-beam {
+  stroke: var(--meridian-gold);
+}
+
+.meridian-mark:hover .m-weight-solid,
+.meridian-mark:focus-visible .m-weight-solid {
+  fill: var(--meridian-gold-light);
+  transform: translateY(1.5px);
+}
+
+.meridian-mark:hover .m-weight-open,
+.meridian-mark:focus-visible .m-weight-open {
+  stroke: var(--meridian-gold-light);
+  transform: translateY(-1.5px);
+}
+
+.meridian-mark:hover .m-pivot,
+.meridian-mark:focus-visible .m-pivot {
+  animation: meridian-pivot-pulse var(--meridian-motion-duration) var(--meridian-motion-easing);
+}
+
+@keyframes meridian-pivot-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* keyboard focus gets the same treatment as hover (see :focus-visible
+   rules above) so the interaction isn't mouse-only, plus a visible
+   focus ring for accessibility */
+.meridian-mark:focus-visible {
+  outline: 2px solid var(--meridian-gold);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* ----------------------------------------------------------------
+   Reduced motion: honor the OS-level preference
+   ------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .meridian-mark .m-beam,
+  .meridian-mark .m-weight-solid,
+  .meridian-mark .m-weight-open,
+  .meridian-mark .m-pivot {
+    transition-duration: 120ms;
+    transition-timing-function: linear;
+  }
+
+  .meridian-mark:hover .m-weight-solid,
+  .meridian-mark:focus-visible .m-weight-solid,
+  .meridian-mark:hover .m-weight-open,
+  .meridian-mark:focus-visible .m-weight-open {
+    /* keep the color change (communicates state) but drop the
+       positional movement entirely */
+    transform: none;
+  }
+
+  .meridian-mark:hover .m-pivot,
+  .meridian-mark:focus-visible .m-pivot {
+    animation: none;
+  }
+}
+
+/* ----------------------------------------------------------------
+   Loading state: continuous, gentle motion for a loading screen.
+   NOT tied to :hover -- apply `.meridian-mark--loading` directly.
+   This one respects reduced-motion by freezing on a static frame
+   rather than removing the loading affordance entirely, since a
+   loading indicator needs to still communicate "in progress."
+   ------------------------------------------------------------- */
+.meridian-mark--loading .m-weight-solid,
+.meridian-mark--loading .m-weight-open {
+  animation: meridian-loading-drift 1.8s ease-in-out infinite;
+}
+.meridian-mark--loading .m-weight-open {
+  animation-delay: -0.9s; /* opposite phase, so the two weights
+                              gently seesaw rather than move in sync */
+}
+
+@keyframes meridian-loading-drift {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2.5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .meridian-mark--loading .m-weight-solid,
+  .meridian-mark--loading .m-weight-open {
+    animation: none;
+  }
+}

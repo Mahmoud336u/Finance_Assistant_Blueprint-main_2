@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Sparkles, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { smoothEase } from "@/lib/animations";
 import { useAuthStore } from "@/lib/store/auth-store";
@@ -57,7 +57,7 @@ export default function LoginPage() {
               { stat: "Smart", desc: "Budget alerts" },
             ].map((f) => (
               <div key={f.stat}>
-                <p className="text-sm font-semibold text-primary">{f.stat}</p>
+                <p className="text-sm font-semibold text-[#C89B3C]">{f.stat}</p>
                 <p className="mt-0.5 text-xs text-foreground-subtle">{f.desc}</p>
               </div>
             ))}

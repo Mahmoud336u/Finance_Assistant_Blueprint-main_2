@@ -76,7 +76,7 @@ export function Sidebar() {
       transition={{ duration: 0.25, ease: smoothEase }}
     >
       {/* Logo */}
-      <div className="logo-hover-target flex h-16 items-center border-b border-border px-3">
+      <div className="flex h-16 items-center border-b border-border px-3">
         <MeridianLogo
           size={sidebarCollapsed ? 28 : 32}
           collapsed={sidebarCollapsed}
